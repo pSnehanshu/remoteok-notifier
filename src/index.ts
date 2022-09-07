@@ -4,6 +4,7 @@ import axios from "axios";
 import ejs from "ejs";
 import path from "path";
 import ago from "s-ago";
+import prisma from "../prisma/prisma";
 
 interface Job {
   id: string;
@@ -67,12 +68,50 @@ async function createEmailBody(jobs: Job[]) {
   );
 }
 
+async function filterUnseenJobs(jobs: Job[]): Promise<Job[]> {
+  const seenJobs = await prisma.seen_jobs.findMany({
+    where: {
+      id: {
+        in: jobs.map((j) => j.id),
+      },
+    },
+  });
+
+  // return unseen jobs
+  const unseenJobs = jobs.filter((job) => {
+    return !seenJobs.find((j2) => j2.id === job.id);
+  });
+
+  // Insert the unseen jobs
+  const result = await Promise.allSettled(
+    unseenJobs.map((job) =>
+      prisma.seen_jobs.create({
+        data: { id: job.id },
+      })
+    )
+  );
+
+  // Check failures
+  result.forEach((result) => {
+    if (result.status === "rejected") {
+      console.error(result.reason);
+    }
+  });
+
+  // Return the jobs
+  return unseenJobs;
+}
+
 const main = async () => {
   const url =
     "https://remoteok.com/remote-javascript-jobs?location=Worldwide&min_salary=60000&order_by=date";
   const jobs = await fetchLatestJobs(url);
-  const html = await createEmailBody(jobs);
-  console.log(html);
+  const newjobs = await filterUnseenJobs(jobs);
+  console.log(`${newjobs.length} new jobs found!`);
+  if (newjobs.length > 0) {
+    const html = await createEmailBody(newjobs);
+    console.log(html);
+  }
 };
 
 if (process.env.NODE_ENV === "production") {
