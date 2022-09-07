@@ -3,6 +3,7 @@ import { load as cheerioLoad } from "cheerio";
 import axios from "axios";
 import ejs from "ejs";
 import path from "path";
+import ago from "s-ago";
 
 interface Job {
   id: string;
@@ -10,6 +11,8 @@ interface Job {
   company: string;
   logoUrl?: string;
   link: string;
+  time?: Date;
+  age: string | "N/A";
 }
 
 async function fetchLatestJobs(url: string): Promise<Job[]> {
@@ -39,6 +42,7 @@ async function fetchLatestJobs(url: string): Promise<Job[]> {
       const role = jobInfo.find("a>h2").text().replace("\n", "").trim();
       const link = `https://remoteok.com/remote-jobs/${jobId}`;
       const logo = row.find(".image.has-logo>a>img").attr("data-src");
+      const time = row.find(".time>time").attr("datetime");
 
       jobs.push({
         id: jobId,
@@ -46,6 +50,8 @@ async function fetchLatestJobs(url: string): Promise<Job[]> {
         title: role,
         link,
         logoUrl: logo,
+        time: time ? new Date(time) : undefined,
+        age: time ? ago(new Date(time)) : "N/A",
       });
     }
   });

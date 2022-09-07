@@ -18,13 +18,11 @@
         <tr>
           <td>
             <% if (job.logoUrl) { %>
-            <img src="<%=job.logoUrl%>" />
+            <img src="<%=job.logoUrl%>" style="max-width: 100px" />
             <% } else { %> N/A <% } %>
           </td>
           <td><%=job.company%></td>
-          <td>
-            <a href="<%=job.link%>"><%=job.title%></a>
-          </td>
+          <td><a href="<%=job.link%>"><%=job.title%></a> (<%=job.age%>)</td>
         </tr>
         <% }) %>
       </tbody>
