@@ -1,6 +1,8 @@
 import cron from "node-cron";
 import { load as cheerioLoad } from "cheerio";
 import axios from "axios";
+import ejs from "ejs";
+import path from "path";
 
 interface Job {
   id: string;
@@ -51,12 +53,20 @@ async function fetchLatestJobs(url: string): Promise<Job[]> {
   return jobs;
 }
 
+async function createEmailBody(jobs: Job[]) {
+  return ejs.renderFile(
+    path.join(__dirname, "email.ejs"),
+    { jobs },
+    { async: true }
+  );
+}
+
 const main = async () => {
   const url =
     "https://remoteok.com/remote-javascript-jobs?location=Worldwide&min_salary=60000&order_by=date";
   const jobs = await fetchLatestJobs(url);
-
-  console.dir(jobs);
+  const html = await createEmailBody(jobs);
+  console.log(html);
 };
 
 if (process.env.NODE_ENV === "production") {
