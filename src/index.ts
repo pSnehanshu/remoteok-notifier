@@ -61,10 +61,10 @@ async function fetchLatestJobs(url: string): Promise<Job[]> {
   return jobs;
 }
 
-async function createEmailBody(jobs: Job[]) {
+async function createEmailBody(jobs: Job[], source: string) {
   return ejs.renderFile(
     path.join(__dirname, "email.ejs"),
-    { jobs },
+    { jobs, source },
     { async: true }
   );
 }
@@ -112,8 +112,7 @@ const main = async () => {
   console.log(`${newjobs.length} new jobs found!`);
 
   if (newjobs.length > 0) {
-    const html = await createEmailBody(newjobs);
-    // console.log(html);
+    const html = await createEmailBody(newjobs, url);
 
     await sendEmail({
       from: {
