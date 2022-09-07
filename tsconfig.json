@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "build",
+    "strict": true,
+    "lib": ["ES2021", "DOM"],
+    "target": "ES2021",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "module": "CommonJS"
+  },
+  "ts-node": {
+    "files": true
+  }
+}
