@@ -5,6 +5,7 @@ import ejs from "ejs";
 import path from "path";
 import ago from "s-ago";
 import prisma from "../prisma/prisma";
+import { sendEmail } from "./mail";
 
 interface Job {
   id: string;
@@ -106,11 +107,23 @@ const main = async () => {
   const url =
     "https://remoteok.com/remote-javascript-jobs?location=Worldwide&min_salary=60000&order_by=date";
   const jobs = await fetchLatestJobs(url);
+
   const newjobs = await filterUnseenJobs(jobs);
   console.log(`${newjobs.length} new jobs found!`);
+
   if (newjobs.length > 0) {
     const html = await createEmailBody(newjobs);
-    console.log(html);
+    // console.log(html);
+
+    await sendEmail({
+      from: {
+        name: "RemoteOK Bot",
+        address: "hello@snehanshu.com",
+      },
+      to: "snehanshuphukan@gmail.com",
+      subject: `${newjobs.length} new jobs found on RemoteOK`,
+      html,
+    });
   }
 };
 
