@@ -105,7 +105,7 @@ async function filterUnseenJobs(jobs: Job[]): Promise<Job[]> {
 
 const main = async () => {
   const url =
-    "https://remoteok.com/remote-javascript-jobs?location=Worldwide&min_salary=60000&order_by=date";
+    "https://remoteok.com/remote-engineer+javascript-jobs?location=Worldwide&min_salary=60000&order_by=date";
   const jobs = await fetchLatestJobs(url);
 
   const newjobs = await filterUnseenJobs(jobs);
