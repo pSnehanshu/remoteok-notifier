@@ -128,6 +128,8 @@ const main = async () => {
 
 if (process.env.NODE_ENV === "production") {
   cron.schedule("0 0 11 * * *", main);
+  console.log("RemoteOK bot schedule running...");
 } else {
   main();
+  console.log("RemoteOK bot ran once...");
 }
