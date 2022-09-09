@@ -127,7 +127,9 @@ const main = async () => {
 };
 
 if (process.env.NODE_ENV === "production") {
-  cron.schedule("0 0 11 * * *", main);
+  cron.schedule("0 0 11 * * *", main, {
+    timezone: "Asia/Kolkata",
+  });
   console.log("RemoteOK bot schedule running...");
 } else {
   main();
